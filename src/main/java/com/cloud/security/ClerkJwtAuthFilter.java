@@ -24,7 +24,7 @@ import java.util.Collections;
 @Component
 @RequiredArgsConstructor
 public class ClerkJwtAuthFilter extends OncePerRequestFilter {
-    @Value("${CLERK_ISSUER:https://super-filly-15.clerk.accounts.dev}")
+    @Value("${clerk.issuer}")
     private String clerkIssues;
 
     private final ClerkJwksProvider jwksProvider;
@@ -33,6 +33,7 @@ public class ClerkJwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+//        System.out.println(">>> Clerk Issuer: " + clerkIssues);
         // Bug 1 fixed: added return after doFilter for webhook bypass
         if (request.getRequestURI().contains("/api/v1/webhooks") ||
                 request.getRequestURI().contains("/api/v1/files/public") ||
@@ -102,7 +103,8 @@ public class ClerkJwtAuthFilter extends OncePerRequestFilter {
         return uri.contains("/webhooks") ||
                 uri.contains("/register") ||
                 uri.contains("/files/public") ||
-                uri.contains("/files/download");
+                uri.contains("/files/download") ||
+                uri.contains("/health");
 //        System.out.println(">>> shouldNotFilter result: " + skip);
 
     }
