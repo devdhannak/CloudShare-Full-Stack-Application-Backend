@@ -24,7 +24,7 @@ import java.util.Collections;
 @Component
 @RequiredArgsConstructor
 public class ClerkJwtAuthFilter extends OncePerRequestFilter {
-    @Value("${clerk.issuer}")
+    @Value("${CLERK_ISSUER:https://super-filly-15.clerk.accounts.dev}")
     private String clerkIssues;
 
     private final ClerkJwksProvider jwksProvider;
