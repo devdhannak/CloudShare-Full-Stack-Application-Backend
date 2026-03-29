@@ -94,6 +94,7 @@ public class ProfileService {
         }
     }
 
+    // AFTER
     public ProfileDocument getCurrentProfile(){
         if(SecurityContextHolder.getContext().getAuthentication() == null){
             throw new UsernameNotFoundException("User not authenticated");
@@ -102,7 +103,13 @@ public class ProfileService {
         ProfileDocument profile = profileRepository.findByClerkId(clerkId);
 
         if(profile == null){
-            throw new UsernameNotFoundException("Profile not found for user: " + clerkId);
+            // Webhook missed — create profile on the fly
+            profile = ProfileDocument.builder()
+                    .clerkId(clerkId)
+                    .credits(5)
+                    .createdAt(Instant.now())
+                    .build();
+            profile = profileRepository.save(profile);
         }
 
         return profile;

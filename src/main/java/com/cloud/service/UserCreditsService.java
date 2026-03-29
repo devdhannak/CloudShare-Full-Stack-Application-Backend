@@ -22,11 +22,20 @@ public class UserCreditsService {
         return userCreditsRepository.save(userCredits);
     }
     public UserCredits getUserCredits(String clerkId){
-       UserCredits userCredits =  userCreditsRepository.findByClerkId(clerkId);
-       if(userCredits.getCredits() == null || userCredits.getCredits() == 0){
-           return createInitialCredits(clerkId);
-       }
-       return userCredits;
+        UserCredits userCredits = userCreditsRepository.findByClerkId(clerkId);
+
+        // No record at all → create one
+        if(userCredits == null){
+            return createInitialCredits(clerkId);
+        }
+
+        // Credits null → fix in place, don't create duplicate
+//        if(userCredits.getCredits() == null){
+//            userCredits.setCredits(5);
+//            return userCreditsRepository.save(userCredits);
+//        }
+
+        return userCredits;
     }
 
     public UserCredits getUserCredits(){
@@ -42,7 +51,7 @@ public class UserCreditsService {
     public UserCredits consumeCredit(){
         UserCredits userCredits = getUserCredits();
         if(userCredits.getCredits() <= 0){
-            return  null;
+            return null;
         }
         userCredits.setCredits(userCredits.getCredits()-1);
         return userCreditsRepository.save(userCredits);
