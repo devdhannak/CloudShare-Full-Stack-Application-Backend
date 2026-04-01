@@ -4,6 +4,7 @@ import com.cloud.document.ProfileDocument;
 import com.cloud.dto.FileMetaDataDTO;
 import com.cloud.repository.FileMetaDataRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FileMetaDataService {
@@ -27,6 +29,7 @@ public class FileMetaDataService {
     private final ProfileService profileService;
     private final UserCreditsService userCreditsService;
     private final FileMetaDataRepository fileMetaDataRepository;
+    private final AwsService awsService;
 
     public List<FileMetaDataDTO> uploadFiles(MultipartFile files[]) throws IOException {
         ProfileDocument currentProfile = profileService.getCurrentProfile();
@@ -40,11 +43,16 @@ public class FileMetaDataService {
         Files.createDirectories(uploadPath);
 
         for(MultipartFile file:files){
+            String fileUrl = awsService.uploadFile(file);
+            log.info("AWS URL: {}", fileUrl);
+//            logger.info("AWS URL: "+fileUrl);
+
             String fileName = UUID.randomUUID()+"."+ StringUtils.getFilenameExtension(file.getOriginalFilename());
             Path targetLocation = uploadPath.resolve(fileName);
             Files.copy(file.getInputStream(),targetLocation, StandardCopyOption.REPLACE_EXISTING);
             FileMetaDataDocument fileMetaData = FileMetaDataDocument.builder()
-                    .fileLocation(targetLocation.toString())
+                    .fileLocation(fileUrl)
+                    .awsUrl(fileUrl)
                     .name(file.getOriginalFilename())
                     .size(file.getSize())
                     .type(file.getContentType())
@@ -117,6 +125,7 @@ public class FileMetaDataService {
     private FileMetaDataDTO mapToDTO(FileMetaDataDocument fileMetaDataDocument){
         return FileMetaDataDTO.builder()
                 .fileLocation(fileMetaDataDocument.getFileLocation())
+                .awsUrl(fileMetaDataDocument.getAwsUrl())
                 .name(fileMetaDataDocument.getName())
                 .size(fileMetaDataDocument.getSize())
                 .id(fileMetaDataDocument.getId())

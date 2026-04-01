@@ -31,6 +31,7 @@ public class SecurityConfig {
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests(auth-> auth.requestMatchers("/webhooks/**","/files/public/**","/files/download/**","/health").permitAll()
                             .requestMatchers(HttpMethod.POST,"/register").permitAll()
+//                            .requestMatchers(HttpMethod.POST,"/upload").permitAll()
                             .anyRequest().authenticated())
                     .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .addFilterBefore(clerkJwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
