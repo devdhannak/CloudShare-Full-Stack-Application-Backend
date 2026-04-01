@@ -102,6 +102,7 @@ public class ClerkJwtAuthFilter extends OncePerRequestFilter {
 //        System.out.println(">>> shouldNotFilter URI: [" + uri + "]");
         return uri.contains("/webhooks") ||
                 uri.contains("/register") ||
+//                uri.contains("/upload") ||
                 uri.contains("/files/public") ||
                 uri.contains("/files/download") ||
                 uri.contains("/health");

@@ -20,4 +20,5 @@ public class FileMetaDataDTO {
     private Boolean isPublic;
     private String fileLocation;
     private LocalDateTime uploadedAt;
+    private String awsUrl;
 }
